@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+gunicorn
+asyncpg
+sqlalchemy
+openai
+plotly
+python-dotenv
+pydantic
+httpx
