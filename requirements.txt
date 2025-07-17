@@ -4,7 +4,9 @@ gunicorn
 asyncpg
 sqlalchemy
 openai
-plotly
+plotly[express]
+numpy
+pandas
 python-dotenv
 pydantic
 httpx
