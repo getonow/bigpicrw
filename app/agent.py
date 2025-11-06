@@ -4,8 +4,14 @@ from .supabase_client import get_part_from_supabase
 from .plotly_utils import create_all_charts
 from datetime import datetime
 import re
+import logging
 
-openai.api_key = OPENAI_API_KEY
+logger = logging.getLogger(__name__)
+
+if not OPENAI_API_KEY:
+    logger.warning("OPENAI_API_KEY not set - AI features will not work")
+else:
+    openai.api_key = OPENAI_API_KEY
 
 # Relevant months and columns
 MONTHS = [
@@ -81,6 +87,9 @@ async def analyze_part(db, message: str):
         new_price
     )
 
+    if not OPENAI_API_KEY:
+        raise ValueError("OpenAI API key is not configured. Please set OPENAI_API_KEY environment variable.")
+    
     prompt = f"""
 You are a procurement and negotiation expert. Analyze the following situation and provide a structured response in English:
 
@@ -113,15 +122,20 @@ Provide a structured response with the following sections:
 Format the response using markdown for better presentation. Do not include any label or title like 'Structured Response' in your answer.
 """
     
-    response = openai.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": "You are a procurement and negotiation expert. Provide structured analysis and practical recommendations in English."},
-            {"role": "user", "content": prompt}
-        ]
-    )
-    
-    full_text = response.choices[0].message.content.strip()
+    try:
+        response = openai.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "You are a procurement and negotiation expert. Provide structured analysis and practical recommendations in English."},
+                {"role": "user", "content": prompt}
+            ],
+            timeout=60.0
+        )
+        
+        full_text = response.choices[0].message.content.strip()
+    except Exception as e:
+        logger.error(f"OpenAI API error: {str(e)}")
+        raise ValueError(f"Failed to generate AI analysis: {str(e)}")
     
     # Parse the response to extract sections
     sections = parse_ai_response(full_text)

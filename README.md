@@ -42,8 +42,10 @@ Crea un archivo `.env` en la raíz con:
 OPENAI_API_KEY=tu_api_key_openai
 DATABASE_URL=postgresql+asyncpg://usuario:password@host:puerto/db
 SUPABASE_URL=tu_url_supabase
-SUPABASE_KEY=tu_key_supabase
+SUPABASE_ANON_KEY=tu_anon_key_supabase
 ```
+
+**Nota**: La variable se llama `SUPABASE_ANON_KEY` (no `SUPABASE_KEY`)
 
 ## Ejecución Backend
 
